@@ -6,22 +6,35 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        # Determine OS and architecture based on system
-        os = if pkgs.stdenv.isDarwin then "macos"
-             else if pkgs.stdenv.isLinux then 
-               (if pkgs.stdenv.buildPlatform.isMusl then "alpine" else "linux")
-             else throw "Unsupported system";
-             
-        arch = if pkgs.stdenv.hostPlatform.isAarch64 then "arm64"
-               else if pkgs.stdenv.hostPlatform.isx86_64 then "x64"
-               else throw "Unsupported architecture";
 
-        version = "6.14.3";  # You can update this version as needed
+        # Determine OS and architecture based on system
+        os =
+          if pkgs.stdenv.isDarwin then
+            "macos"
+          else if pkgs.stdenv.isLinux then
+            (if pkgs.stdenv.buildPlatform.isMusl then "alpine" else "linux")
+          else
+            throw "Unsupported system";
+
+        arch =
+          if pkgs.stdenv.hostPlatform.isAarch64 then
+            "arm64"
+          else if pkgs.stdenv.hostPlatform.isx86_64 then
+            "x64"
+          else
+            throw "Unsupported architecture";
+
+        version = "6.14.3"; # You can update this version as needed
 
         # Define a map of hashes for each platform and architecture combination
         # nix hash to-sri --type sha256  $(nix-prefetch-url https://github.com/stoplightio/spectral/releases/download/v6.14.3/spectral-alpine-arm64)
@@ -36,21 +49,40 @@
 
         # Get the hash for the current os and arch
         hash = builtins.getAttr "${os}-${arch}" hashes;
+
+        name = "spectral-cli";
       in
       {
         packages = {
-          spectral-cli = pkgs.runCommand "spectral-cli-${version}" {
+          spectral-cli = pkgs.stdenv.mkDerivation {
+            inherit name version;
+
             src = pkgs.fetchurl {
               url = "https://github.com/stoplightio/spectral/releases/download/v${version}/spectral-${os}-${arch}";
               hash = hash;
             };
-          } ''
-            mkdir -p $out/bin
-            cp $src $out/bin/spectral
-            chmod +x $out/bin/spectral
-          '';
+
+            dontUnpack = true;
+
+            installPhase = ''
+              mkdir -p $out/bin
+              cp $src $out/bin/spectral
+              chmod +x $out/bin/spectral
+            '';
+
+            buildInputs = with pkgs; [
+              stdenv.cc.cc.lib
+            ];
+
+            nativeBuildInputs = with pkgs; [
+              autoPatchelfHook
+            ];
+
+            dontStrip = true;
+          };
 
           default = self.packages.${system}.spectral-cli;
         };
-      });
+      }
+    );
 }
