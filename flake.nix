@@ -34,17 +34,17 @@
           else
             throw "Unsupported architecture";
 
-        version = "6.14.3"; # You can update this version as needed
+        version = "6.15.0";  # You can update this version as needed
 
         # Define a map of hashes for each platform and architecture combination
-        # nix hash to-sri --type sha256  $(nix-prefetch-url https://github.com/stoplightio/spectral/releases/download/v6.14.3/spectral-alpine-arm64)
+        # nix hash to-sri --type sha256  $(nix-prefetch-url https://github.com/stoplightio/spectral/releases/download/v6.15.0/spectral-alpine-arm64)
         hashes = {
-          "macos-x64" = "sha256-OdjiwkO3GnocQSLcTLDLgVEw0IPxAP18fWNaJ4c/nP0=";
-          "macos-arm64" = "sha256-NQUpOTjCAFtJvPOJBlkf91IpZPqxCm6wF9UDt269YAI=";
-          "linux-x64" = "sha256-Kad4Ot7j462pntDroOmxN62BVVN7AnKQM6JCX16e+00=";
-          "linux-arm64" = "sha256-D4a7mgh2PIRK3rl/Y2L96F0HqgeHc9OCOQiy47oAiaM=";
-          "alpine-x64" = "sha256-INw/q/ZxwSE/D6n2Yo/5AUpR9i5eGi4eL4dlb7GrCOM=";
-          "alpine-arm64" = "sha256-Vmw0LO36mflBEe0+U3JqbtsCB7AG2M5PPGGT3rjE+2M=";
+          "macos-x64" = "sha256-42LXwXZvmHw8f03qtZAOonlGSqPSSV7nWSmOOY8eu0I=";
+          "macos-arm64" = "sha256-3LO02JQm4vUywQ0BFdk6mwunizMA4IU7rBadcKKfDuY=";
+          "linux-x64" = "sha256-TjdF86rPwPkZZXeiBMd3kNV9SUfjegUebDQvhbQyYY8=";
+          "linux-arm64" = "sha256-TS35rIhal7Buu9B+4vrJIV3Jvu8oq/Tj/t5lF7fs8qE=";
+          "alpine-x64" = "sha256-mkyoXFSQLGRGFRhIvo0XH91gUeMyig8+4uJZ7UNGW4Y=";
+          "alpine-arm64" = "sha256-vsOyVZdaax3jxPx7KmgWjOkrCB9J0jrEx6HZrq/3mFM=";
         };
 
         # Get the hash for the current os and arch
